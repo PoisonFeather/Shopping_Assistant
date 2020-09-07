@@ -48,9 +48,10 @@ def sites(txt):
             #Search on more sites with threading
             
             print("Starting searching...")
-            
-            #url=url_list[0]+"/"+query_list[0]+"/"+query_list[1]+"/q-"+query_list[2]+"/?"+query_list[3]+query_list[4]
-            url = "http://www.olx.ro/imobiliare/alba-iulia/q-casa/?search%5Bfilter_float_price%3Afrom%5D=10+&amp;search%5Bfilter_float_price%3Ato%5D=100000"
+            count = 1
+            url=url_list[0]+query_list[0]+"/"+query_list[1]+"/q-"+query_list[2]+"/?"+query_list[3]+query_list[4]
+            #url = "http://www.olx.ro/imobiliare/alba-iulia/q-casa/?search%5Bfilter_float_price%3Afrom%5D=10+&amp;search%5Bfilter_float_price%3Ato%5D=100000"
+            #url="https://www.olx.ro/oferta/1-2-duplex-de-lux-modern-str-lalelelor-cetate-langa-lidl-IDd68eu.html#bd464d27c7;promoted"
             headers = {'User-Agent': 'Mozilla/5.0'}
             print(url)
             r = requests.get(url,headers=headers, verify=False)
