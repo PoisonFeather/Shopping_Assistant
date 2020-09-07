@@ -6,7 +6,7 @@ from array import *
 inList=False
 def sites(txt):
     site_list = ['olx', 'emag']
-    url_list = ['https://www.olx.ro/oferte/q-']
+    url_list = ['https://www.olx.ro/']
     if txt.lower() in site_list:
         print("ok...")
         num=site_list.index(txt.lower())
@@ -23,20 +23,40 @@ def sites(txt):
         print("Do you have a price range? *€*")
         price_true=input("yes/no ")
         if price_true.lower() == "yes":
-            price_lower=input("Lower price: ")
-            price_higher=input("Higher price: ")
-        else :
-            price_lower=0
-            price_higher= 100000000000
+            price_lower = "search%5Bfilter_float_price%3Afrom%5D="
+            price_lower=price_lower+input("Lower price: ")
+            price_higher = "&search%5Bfilter_float_price%3Ato%5D="
+            price_higher=price_higher+input("Higher price: ")
+            print(price_lower)
+        else:
+            price_lower="search%5Bfilter_float_price%3Afrom%5D=0"
+            price_higher = "&search%5Bfilter_float_price%3Ato%5D=1000000000"
         #HOMES
         if search.lower() == "homes":
             place=input("What city?")
-             
+            query_list=["imobiliare",place,"casa",price_lower,price_higher]
+            other_optionsTrue=input("Want other options? *not in query* eg. Rooms, balcony...   yes/no ")
+            if other_optionsTrue == "yes":
+                print("what should those be: (Ctrl+C when done)")
+                other_options=[]
+                try:
+                    while True:
+                        options=input()
+                        other_options.append(options)
+                except KeyboardInterrupt:
+                    pass
+            #Search on more sites with threading
+            
+            print("Starting searching...")
+            
+            #url=url_list[0]+"/"+query_list[0]+"/"+query_list[1]+"/q-"+query_list[2]+"/?"+query_list[3]+query_list[4]
+            url = "http://www.olx.ro/imobiliare/alba-iulia/q-casa/?search%5Bfilter_float_price%3Afrom%5D=10+&amp;search%5Bfilter_float_price%3Ato%5D=100000"
+            headers = {'User-Agent': 'Mozilla/5.0'}
+            print(url)
+            r = requests.get(url,headers=headers, verify=False)
 
-
-
-
-    else:
-        print("ERROR 1")
-        print("Not in list")
-    
+            soup=BeautifulSoup(r.text,'html.parser')
+            soup.get_text()
+           # soup.prettify()
+            print(r.text)
+                
