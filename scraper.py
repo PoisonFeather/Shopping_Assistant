@@ -54,10 +54,40 @@ def sites(txt):
             #url="https://www.olx.ro/oferta/1-2-duplex-de-lux-modern-str-lalelelor-cetate-langa-lidl-IDd68eu.html#bd464d27c7;promoted"
             headers = {'User-Agent': 'Mozilla/5.0'}
             print(url)
-            r = requests.get(url,headers=headers, verify=False)
+            print(requests.get(url,headers=headers))
+            r=requests.get(url,headers=headers)
 
             soup=BeautifulSoup(r.text,'html.parser')
             soup.get_text()
-           # soup.prettify()
-            print(r.text)
-                
+            soup.prettify()
+            #    print(soup.find_all('a',href=True))
+            for a in soup.find_all('a', href=True):
+                #print (a['href'])  
+                link_home=a['href']
+                if  link_home != "#" and link_home != " " and link_home != "javascript:void(0);" and "casa" in link_home or "page" in link_home:
+                    print(link_home)
+                    home=requests.get(a['href'])
+                    home_soup=BeautifulSoup(home.text,'html.parser')
+                    home_soup.get_text()
+                    #print(home_soup.find_all('p'))
+                    #other_options[]
+                    descriere=home_soup.find("div", id="textContent")
+                    #print(descriere)
+                    if descriere != None:
+                        descriere=home_soup.find("div",id="textContent").get_text()
+                        #print(options)
+                        if any(o in descriere for o in other_options):
+                            print("Good")
+                            print(link_home)
+                if link_home == url +"&page=2":
+                    print("BAAAAAAAAAAAAAAAAAAAAAAA")
+                    url=url+"&page="+count
+                    r=requests.get(url,headers=headers)
+                    soup=BeautifulSoup(r.text,'html.parser')
+                    soup.get_text()
+                    soup.prettify()
+                    count=count+1
+                    a=0
+                    #print(link_home)
+                #else:
+                    #print("")
