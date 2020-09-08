@@ -116,7 +116,7 @@ def thread1_olx_home():
                    descriere = home_soup.find("div", id="textContent")
                    if descriere != None:
                         descriere = home_soup.find("div", id="textContent").get_text()
-                        if all(o in descriere for o in other_options):
+                        if is_okey_men(other_options,descriere):
                             if(link_home not in link_array):
                                 link_array.append(link_home)
                                 f=open('links.txt',"a")
@@ -171,7 +171,7 @@ def therad2_stroia_home():
                    if descriere_stroia != None:
                        descriere_stroia = home_soup_stroia.find(
                            "div", {"class": "css-uiakpw"}).get_text()
-                       if all(o_stroia in descriere_stroia for o_stroia in other_options):
+                       if is_okey_men(other_options,descriere_stroia):
                            if(link_home_stroia not in link_array_stroia):
                                link_array_stroia.append(link_home_stroia)
                                stroia=open('stroia.txt',"a")
@@ -190,3 +190,19 @@ def therad2_stroia_home():
         pass
 
 
+def is_okey_men(options_arrai,descrieres):
+    length=len(options_arrai)
+    print(length)
+    maxdif=length-1
+    print(maxdif)
+    temp= [item for item in options_arrai if item not in descrieres]
+    print(temp)
+    temp_length=len(temp)
+    print(temp_length)
+    if length-temp_length>maxdif:
+        print("FALSE")
+        return False
+
+    else:
+        print("TRUE")
+        return True
