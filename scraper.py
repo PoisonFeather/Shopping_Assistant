@@ -10,11 +10,10 @@ def sites(txt):
     site_list = ['olx', 'emag']
     url_list = ['https://www.olx.ro/']
     if txt.lower() in site_list:
-        print("ok...")
         num=site_list.index(txt.lower())
         print(site_list[num])
         print(url_list[num])
-        f = open(r"Shopping_Assistant\links.txt", "w")
+        f = open('links.txt', "w")
         print("What do you want to search for?")
         print("Homes:")
         print("Apartments:")
@@ -63,12 +62,14 @@ def sites(txt):
            # soup.prettify()
             searching=True
             #    print(soup.find_all('a',href=True))
-            old_url=url
+            old_url = url
+            link_array = ['']
             try:
                 while searching:
                     count=count+1
                     
                     url=old_url+"&page="+str(count)
+                    print(requests.get(url, headers=headers))
                     print(url+ " Asta ii nou")
                     r=requests.get(url,headers=headers)
                     soup=BeautifulSoup(r.text,'html.parser')
@@ -78,6 +79,7 @@ def sites(txt):
                     for a in soup.find_all('a', href=True):
                         #print (a['href'])  
                         link_home=a['href']
+                        timer1 = time.time()
                         if  ";promoted" not in link_home and link_home != "#" and link_home != " " and link_home != "javascript:void(0);" and "casa" in link_home or "page" in link_home:
                             home=requests.get(a['href'])
                             home_soup=BeautifulSoup(home.text,'html.parser')
@@ -85,12 +87,16 @@ def sites(txt):
                             descriere=home_soup.find("div", id="textContent")
                             if descriere != None:
                                 descriere=home_soup.find("div",id="textContent").get_text()
-                                if all(o in descriere for o in other_options):
-                                    print("Good")
-                                    print(link_home)
-                                    print(url)
-                                    f.write(link_home)
-                                    f.write("\n")
+                                if any(o in descriere for o in other_options):
+                                    if(link_home not in link_array):
+                                        link_array.append(link_home)
+                                        print("Good")
+                                        print(link_home)
+                                        print(url)
+                                        f.write(link_home)
+                                        f.write("\n")
+                                        timer2 = time.time()
+                                        print(timer2-timer1)
                         if link_home == url +"&page=2":
                             break
             except KeyboardInterrupt:
