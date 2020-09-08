@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import requests, sys
 import time
-from threading import Thread
+import threading 
 from multiprocessing import Process
 #from array import *
 #https://www.olx.ro/imobiliare/alba-iulia/q-imobiliare/?search%5Bfilter_float_price%3Afrom%5D=20&search%5Bfilter_float_price%3Ato%5D=20000
@@ -9,7 +9,7 @@ inList=False
 query_list=[]
 url_list=[]
 other_options=[]
-f = open('links.txt', "w")
+
 def sites(txt):
     
     site_list = ['olx', 'emag']
@@ -60,15 +60,26 @@ def sites(txt):
             #Search on more sites with threading
             
             print("Starting searching...")
+            #run_event=Thread.Event()
             
-            #t1=threading.Thread(target=thread1_olx_home()).start()
-            #t2=threading.Thread(target=therad2_stroia_home()).start()
-            
-            Thread(target=thread1_olx_home).start()
-            Thread(target=therad2_stroia_home).start()
+            #Thread(target=thread1_olx_home).start()
+            #Thread(target=therad2_stroia_home).start()
 
             #t1.join()
-           # t2.join()
+            #t2.join()
+            try:
+                t1 = threading.Thread(target=thread1_olx_home)
+                t2 = threading.Thread(target=therad2_stroia_home)
+                t1.start()
+                t2.start()
+
+                while 1:
+                    time.sleep(.01)
+            except KeyboardInterrupt:
+                t1.join()
+                t1.join()
+                exit()
+                
 
 
 def thread1_olx_home():
@@ -83,18 +94,21 @@ def thread1_olx_home():
     link_array = ['']
     try:
         while searching:
+            
             count = count+1
+            print(str(count) + " olx")
             url = old_url+"&page="+str(count)
-            print(requests.get(url, headers=headers))
-            print(url + " Asta ii nou")
+            #print(requests.get(url, headers=headers))
+            #print(url + " Asta ii nou")
             r = requests.get(url, headers=headers)
             soup = BeautifulSoup(r.text, 'html.parser')
             soup.get_text()
             soup.prettify()
+            
             for a in soup.find_all('a', href=True):
                 link_home = a['href']
-                print(link_home)
-                timer1 = time.time()
+               # print(link_home)
+                #timer1 = time.time()
                 if ";promoted" not in link_home and link_home != "#" and link_home != " " and link_home != "javascript:void(0);" and "casa" in link_home or "page" in link_home:
                    home = requests.get(a['href'])
                    home_soup = BeautifulSoup(home.text, 'html.parser')
@@ -105,13 +119,15 @@ def thread1_olx_home():
                         if all(o in descriere for o in other_options):
                             if(link_home not in link_array):
                                 link_array.append(link_home)
+                                f=open('links.txt',"a")
                                 print("Good")
-                                print(link_home)
-                                print(url)
+                                #print(link_home)
+                               # print(url)
                                 f.write(link_home)
                                 f.write("\n")
-                                timer2 = time.time()
-                                print(timer2-timer1)
+                                #timer2 = time.time()
+                                #print(timer2-timer1)
+                                f.close()
                                 if link_home == url + "&page=":
                                     break
     except KeyboardInterrupt:
@@ -135,18 +151,19 @@ def therad2_stroia_home():
     try:
         while searching:
             count_stroia = count_stroia+1
+            print(str(count_stroia)+" stroia")
             url_stroia = old_url_stroia+"&page="+str(count_stroia)
-            print(requests.get(url_stroia, headers=headers))
-            print(url_stroia + " Asta ii nou")
+            #print(requests.get(url_stroia, headers=headers))
+            #print(url_stroia + " Asta ii nou")
             r_stroia = requests.get(url_stroia, headers=headers)
             soup_stroia = BeautifulSoup(r_stroia.text, 'html.parser')
             soup_stroia.get_text()
             soup_stroia.prettify()
             for a_stroia in soup_stroia.find_all('a', href=True):
                 link_home_stroia = a_stroia['href']
-                timer1_stroia = time.time()
+                #timer1_stroia = time.time()
                 if "javascript:void(0);" not in link_home_stroia and "&map=1" not in link_home_stroia and ";promoted" not in link_home_stroia and link_home_stroia != "#" and link_home_stroia != " " and link_home_stroia != "javascript:void(0)" and "casa" in link_home_stroia or "page" in link_home_stroia and "https://" in link_home_stroia:
-                   print("stroia" + link_home_stroia)
+                  # print("stroia" + link_home_stroia)
                    home_stroia = requests.get(a_stroia['href'])
                    home_soup_stroia = BeautifulSoup(home_stroia.text, 'html.parser')
                    home_soup_stroia.get_text()
@@ -157,16 +174,19 @@ def therad2_stroia_home():
                        if all(o_stroia in descriere_stroia for o_stroia in other_options):
                            if(link_home_stroia not in link_array_stroia):
                                link_array_stroia.append(link_home_stroia)
-                               print("Good")
-                               print(link_home_stroia)
-                               print(url_stroia)
-                               f.write(link_home_stroia)
-                               f.write("\n")
-                               timer2_stroia = time.time()
-                               print(timer2_stroia-timer1_stroia)
+                               stroia=open('stroia.txt',"a")
+                               print("gasit")
+                               #print(link_home_stroia)
+                               #print(url_stroia)
+                               stroia.write(link_home_stroia)
+                               stroia.write("\n")
+                               #timer2_stroia = time.time()
+                               #print(timer2_stroia-timer1_stroia)
+                               stroia.close()
                                if link_home_stroia == url_stroia + "&page=":
                                    break
     except KeyboardInterrupt:
-        f.close()
         exit()
         pass
+
+
