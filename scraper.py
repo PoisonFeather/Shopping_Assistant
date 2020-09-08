@@ -14,7 +14,7 @@ def sites(txt):
         num=site_list.index(txt.lower())
         print(site_list[num])
         print(url_list[num])
-        f = open("Shopping_Assistant\links.txt", "w")
+        f = open(r"Shopping_Assistant\links.txt", "w")
         print("What do you want to search for?")
         print("Homes:")
         print("Apartments:")
@@ -29,12 +29,10 @@ def sites(txt):
             price_lower=price_lower+input("Lower price: ")
             price_higher = "&search%5Bfilter_float_price%3Ato%5D="
             price_higher=price_higher+input("Higher price: ")
-            print(price_lower)
         else:
             price_lower="search%5Bfilter_float_price%3Afrom%5D=0"
             price_higher = "&search%5Bfilter_float_price%3Ato%5D=1000000000"
         #HOMES
-        casefaine=[]
         if search.lower() == "homes":
             place=input("What city?")
             query_list=["imobiliare",place,"casa",price_lower,price_higher]
@@ -65,40 +63,35 @@ def sites(txt):
            # soup.prettify()
             searching=True
             #    print(soup.find_all('a',href=True))
-            while searching:
-                count=count+1
-                print("BAAAAAAAAAAAAAAAAAAAAAAA")
-                url=url+"&page="+str(count)
-                print(url)
-                print("BAAAAAAAAAAAAAA")
-                r=requests.get(url,headers=headers)
-                soup=BeautifulSoup(r.text,'html.parser')
-                soup.get_text()
-                soup.prettify()
-                for a in soup.find_all('a', href=True):
-                    #print (a['href'])  
-                    link_home=a['href']
-                    if  link_home != "#" and link_home != " " and link_home != "javascript:void(0);" and "casa" in link_home or "page" in link_home:
-                        print(link_home)
-                        home=requests.get(a['href'])
-                        home_soup=BeautifulSoup(home.text,'html.parser')
-                        home_soup.get_text()
-                        #print(home_soup.find_all('p'))
-                        #other_options[]
-                        descriere=home_soup.find("div", id="textContent")
-                        #print(descriere)
-                        if descriere != None:
-                            descriere=home_soup.find("div",id="textContent").get_text()
-                            #print(options)
-                            if any(o in descriere for o in other_options):
-                                print("Good")
-                                #casefaine.append(link_home)
-                                print(link_home)
-                                f.write(link_home)
-                                f.write("\n")
-                    if link_home == url +"&page=2":
-                        print(casefaine)
-                        break
-                        #print(link_home)
-                    #else:
-                        #print("")
+            try:
+                while searching:
+                    count=count+1
+                    no
+                    url=url+"&page="+str(count)
+                    print(url+ " Asta ii nou")
+                    r=requests.get(url,headers=headers)
+                    soup=BeautifulSoup(r.text,'html.parser')
+                    soup.get_text()
+                    soup.prettify()
+                
+                    for a in soup.find_all('a', href=True):
+                        #print (a['href'])  
+                        link_home=a['href']
+                        if  ";promoted" not in link_home and link_home != "#" and link_home != " " and link_home != "javascript:void(0);" and "casa" in link_home or "page" in link_home:
+                            home=requests.get(a['href'])
+                            home_soup=BeautifulSoup(home.text,'html.parser')
+                            home_soup.get_text()
+                            descriere=home_soup.find("div", id="textContent")
+                            if descriere != None:
+                                descriere=home_soup.find("div",id="textContent").get_text()
+                                if all(o in descriere for o in other_options):
+                                    print("Good")
+                                    print(link_home)
+                                    print(url)
+                                    f.write(link_home)
+                                    f.write("\n")
+                        if link_home == url +"&page=2":
+                            break
+            except KeyboardInterrupt:
+                f.close()
+                exit()
