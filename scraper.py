@@ -63,11 +63,12 @@ def sites(txt):
            # soup.prettify()
             searching=True
             #    print(soup.find_all('a',href=True))
+            old_url=url
             try:
                 while searching:
                     count=count+1
-                    no
-                    url=url+"&page="+str(count)
+                    
+                    url=old_url+"&page="+str(count)
                     print(url+ " Asta ii nou")
                     r=requests.get(url,headers=headers)
                     soup=BeautifulSoup(r.text,'html.parser')
