@@ -8,21 +8,23 @@ from multiprocessing import Process
 inList=False
 query_list=[]
 url_list=[]
-other_options=[]
+important_options=[]
+less_important_options=[]
 
 def sites(txt):
     
     site_list = ['olx', 'emag']
-    url_list.append('https://www.olx.ro/')
-    url_list.append("https://www.storia.ro/")
+    #url_list=['https://www.olx.ro/','https://www.storia.ro/']
+    url_list.append('http://www.olx.ro/')
+    url_list.append('http://www.storia.ro/')
     if txt.lower() in site_list:
         num=site_list.index(txt.lower())
         print(site_list[num])
         print(url_list[num])
        
-        print("What do you want to search for?")
-        print("Homes:")
-        print("Apartments:")
+        print("Ce vrei sa cauti")
+        print("Case:")
+        print("Apartamente:")
         print("Shoes")
         print("Tv's:")
         print("Other query:  (0)")
@@ -49,32 +51,34 @@ def sites(txt):
             #print(query_list)
             other_optionsTrue=input("Want other options? *not in query* eg. Rooms, balcony...   yes/no ")
             if other_optionsTrue == "yes":
-                print("what should those be: (Ctrl+C when done)")
-                
+                print("what should those be: *most important ones* (Ctrl+C when done)")
                 try:
                     while True:
                         options=input()
-                        other_options.append(options)
+                        important_options.append(options)
+                except KeyboardInterrupt:
+                    pass
+                print("And the less important ones: (Ctrl+c when done)")
+                try:
+                    while True:
+                        imp_options=input()
+                        less_important_options.append(imp_options)
                 except KeyboardInterrupt:
                     pass
             #Search on more sites with threading
             
             print("Starting searching...")
-            #run_event=Thread.Event()
-            
-            #Thread(target=thread1_olx_home).start()
-            #Thread(target=therad2_stroia_home).start()
-
-            #t1.join()
-            #t2.join()
             try:
+                print("\n")
+                print("Mutare proces pe  primul thread...")
                 t1 = threading.Thread(target=thread1_olx_home)
+                print("Mutare cu succes")
+                print("\n")
+                print("Mutare proces pe al doilea thread...")
                 t2 = threading.Thread(target=therad2_stroia_home)
+                print("Pornire threaduri")
                 t1.start()
                 t2.start()
-
-                while 1:
-                    time.sleep(.01)
             except KeyboardInterrupt:
                 t1.join()
                 t1.join()
@@ -116,7 +120,7 @@ def thread1_olx_home():
                    descriere = home_soup.find("div", id="textContent")
                    if descriere != None:
                         descriere = home_soup.find("div", id="textContent").get_text()
-                        if is_okey_men(other_options,descriere):
+                        if is_okey_men(important_options, less_important_options, descriere):
                             if(link_home not in link_array):
                                 link_array.append(link_home)
                                 f=open('links.txt',"a")
@@ -131,6 +135,7 @@ def thread1_olx_home():
                                 if link_home == url + "&page=":
                                     break
     except KeyboardInterrupt:
+        
         f.close()
         exit()
         pass
@@ -171,7 +176,7 @@ def therad2_stroia_home():
                    if descriere_stroia != None:
                        descriere_stroia = home_soup_stroia.find(
                            "div", {"class": "css-uiakpw"}).get_text()
-                       if is_okey_men(other_options,descriere_stroia):
+                       if is_okey_men(important_options, less_important_options, descriere_stroia):
                            if(link_home_stroia not in link_array_stroia):
                                link_array_stroia.append(link_home_stroia)
                                stroia=open('stroia.txt',"a")
@@ -190,19 +195,19 @@ def therad2_stroia_home():
         pass
 
 
-def is_okey_men(options_arrai,descrieres):
-    length=len(options_arrai)
-    print(length)
-    maxdif=length-1
-    print(maxdif)
-    temp= [item for item in options_arrai if item not in descrieres]
+def is_okey_men(imp_options_arrai,less_imp_arrai,descrieres):
+    length=len(less_imp_arrai)
+    #print(length)
+    maxdif=length-int(length/4)
+    #print(maxdif)
+    temp= [item for item in less_imp_arrai if item not in descrieres]
     print(temp)
+    print(maxdif)
     temp_length=len(temp)
-    print(temp_length)
-    if length-temp_length>maxdif:
-        print("FALSE")
-        return False
-
-    else:
-        print("TRUE")
-        return True
+    #print(temp_length)
+    if all(imp in imp_options_arrai for imp in descrieres):
+        if length-temp_length<maxdif:
+            print("FALSE")
+            return False
+        else:
+            print("True")
