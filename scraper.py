@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+#import BeautifulSoup
 import requests, sys
 import time
 import threading 
@@ -206,7 +207,7 @@ def is_okey_men(imp_options_arrai,less_imp_arrai,descrieres):
     temp_length=len(temp)
     #print(temp_length)
     if all(imp in imp_options_arrai for imp in descrieres):
-        if length-temp_length<maxdif:
+        if length-temp_length>maxdif:
             print("FALSE")
             return False
         else:
